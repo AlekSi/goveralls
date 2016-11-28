@@ -17,6 +17,7 @@ func TestLoadBranchFromEnv(t *testing.T) {
 				"GIT_BRANCH":    "master",
 				"CIRCLE_BRANCH": "circle-master",
 				"TRAVIS_BRANCH": "travis-master",
+				"DRONE_BRANCH":  "drone-master",
 				"CI_BRANCH":     "ci-master",
 			},
 			"master",
@@ -26,6 +27,7 @@ func TestLoadBranchFromEnv(t *testing.T) {
 			map[string]string{
 				"CIRCLE_BRANCH": "circle-master",
 				"TRAVIS_BRANCH": "travis-master",
+				"DRONE_BRANCH":  "drone-master",
 				"CI_BRANCH":     "ci-master",
 			},
 			"circle-master",
@@ -34,9 +36,18 @@ func TestLoadBranchFromEnv(t *testing.T) {
 			"all except GIT_BRANCH and CIRCLE_BRANCH",
 			map[string]string{
 				"TRAVIS_BRANCH": "travis-master",
+				"DRONE_BRANCH":  "drone-master",
 				"CI_BRANCH":     "ci-master",
 			},
 			"travis-master",
+		},
+		{
+			"only DRONE_BRANCH and CI_BRANCH defined",
+			map[string]string{
+				"DRONE_BRANCH": "drone-master",
+				"CI_BRANCH":    "ci-master",
+			},
+			"drone-master",
 		},
 		{
 			"only CI_BRANCH defined",
@@ -61,7 +72,7 @@ func TestLoadBranchFromEnv(t *testing.T) {
 }
 
 func resetBranchEnvs(values map[string]string) {
-	for _, envVar := range []string{"CI_BRANCH", "CIRCLE_BRANCH", "GIT_BRANCH", "TRAVIS_BRANCH"} {
+	for _, envVar := range []string{"GIT_BRANCH", "CIRCLE_BRANCH", "TRAVIS_BRANCH", "DRONE_BRANCH", "CI_BRANCH"} {
 		os.Unsetenv(envVar)
 	}
 	for k, v := range values {
