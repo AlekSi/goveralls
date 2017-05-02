@@ -218,6 +218,11 @@ func process() error {
 		jobId = travisJobId
 	} else if circleCiJobId := os.Getenv("CIRCLE_BUILD_NUM"); circleCiJobId != "" {
 		jobId = circleCiJobId
+	} else if droneBuildNumber := os.Getenv("DRONE_BUILD_NUMBER"); droneBuildNumber != "" {
+		jobId = droneBuildNumber
+		if droneJobNumber := os.Getenv("DRONE_JOB_NUMBER"); droneJobNumber != "" {
+			jobId += "." + droneJobNumber
+		}
 	}
 
 	if *repotoken == "" {
@@ -226,6 +231,8 @@ func process() error {
 	var pullRequest string
 	if prNumber := os.Getenv("CIRCLE_PR_NUMBER"); prNumber != "" {
 		// for Circle CI (pull request from forked repo)
+		pullRequest = prNumber
+	} else if prNumber := os.Getenv("DRONE_PULL_REQUEST"); prNumber != "" {
 		pullRequest = prNumber
 	} else if prNumber := os.Getenv("TRAVIS_PULL_REQUEST"); prNumber != "" && prNumber != "false" {
 		pullRequest = prNumber
